@@ -1,0 +1,41 @@
+name: ContextGuard - Not Ready Scenario
+
+on:
+  push:
+    branches:
+      - cg-test-not-ready
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run test suite
+        run: pytest -q
+
+  docker-build:
+    name: Verify Docker build
+    needs: tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build container image
+        run: docker build -t tp-cicd:cg-test-not-ready .
